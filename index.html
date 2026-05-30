@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kim Gunhee AI Model Booting</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<canvas id="neuralCanvas"></canvas>
+
+<header>
+    <nav>
+        <a class="brand" href="#top">
+            <span class="brand-mark">AI</span>
+            <span>GUNHEE.MODEL</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="#dataset">DATASET</a>
+            <a href="#mission">LOGS</a>
+            <a href="#route">ROUTE</a>
+            <a href="#deploy">DEPLOY</a>
+        </div>
+    </nav>
+</header>
+
+<main id="top">
+    <section class="hero">
+        <div class="hero-inner">
+            <div>
+                <div class="eyebrow">
+                    <span class="pulse-dot"></span>
+                    Initializing AI Developer Candidate
+                </div>
+
+                <h1>
+                    KIM GUNHEE
+                    <span>MODEL BOOT</span>
+                </h1>
+
+                <p class="hero-copy">
+                    김건희라는 하나의 AI 모델이 웹 프로그래밍, 네트워크, 서버, 문제 해결 경험을 학습 데이터로 삼아
+                    최종적으로 AI 서비스를 만드는 개발자로 배포되는 과정을 시각화했습니다.
+                    저는 네트워크와 시스템 기반을 이해하는 AI 개발자로 성장하고자 합니다.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="btn" href="#dataset">학습 과정 보기</a>
+                    <a class="btn secondary" href="#mission">시스템 로그 열기</a>
+                </div>
+            </div>
+
+            <div class="model-core">
+                <div class="core-ring ring-1"></div>
+                <div class="core-ring ring-2"></div>
+                <div class="core-ring ring-3"></div>
+
+                <div class="orbit o1"><strong>INPUT</strong>Web / JS</div>
+                <div class="orbit o2"><strong>LINK</strong>Network Lab</div>
+                <div class="orbit o3"><strong>TRAIN</strong>Debug Logs</div>
+                <div class="orbit o4"><strong>OUTPUT</strong>AI Service</div>
+
+                <div class="core">READY</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal" id="dataset">
+        <div class="section-head">
+            <div>
+                <div class="section-kicker">01 / TRAINING DATASET</div>
+                <h2 class="section-title">나를 학습시킨 데이터</h2>
+            </div>
+
+            <p class="section-desc">
+                자기소개 내용을 평범한 항목으로 나열하지 않고, AI 모델이 학습하는 데이터셋처럼 구성했습니다.
+                경험은 입력값이고, 문제 해결은 학습 과정이며, 목표는 모델의 출력값입니다.
+            </p>
+        </div>
+
+        <div class="pipeline">
+            <div class="pipe-step active">
+                <div class="pipe-num">DATA 01</div>
+                <h3>Web</h3>
+                <p>HTML, CSS, JavaScript를 통해 사용자가 직접 보는 화면과 웹 서비스의 기본 구조를 익혔습니다.</p>
+            </div>
+
+            <div class="pipe-step">
+                <div class="pipe-num">DATA 02</div>
+                <h3>Server</h3>
+                <p>웹페이지가 단독으로 끝나는 것이 아니라 서버와 데이터를 주고받으며 서비스가 된다는 점에 관심을 가졌습니다.</p>
+            </div>
+
+            <div class="pipe-step">
+                <div class="pipe-num">DATA 03</div>
+                <h3>Network</h3>
+                <p>데이터가 어떤 경로로 이동하고 안정적으로 연결되는지 이해하기 위해 네트워크 분야를 더 깊게 공부하고 싶습니다.</p>
+            </div>
+
+            <div class="pipe-step">
+                <div class="pipe-num">DATA 04</div>
+                <h3>Debug</h3>
+                <p>오류를 만나면 원인을 작은 단위로 나누어 확인하고, 실패를 다음 시도의 로그로 활용하려고 합니다.</p>
+            </div>
+
+            <div class="pipe-step">
+                <div class="pipe-num">DATA 05</div>
+                <h3>AI</h3>
+                <p>장기적으로는 인공지능 모델을 이해하고, 실제 서비스로 연결하는 AI 개발자로 성장하고 싶습니다.</p>
+            </div>
+
+            <div class="pipe-step">
+                <div class="pipe-num">DATA 06</div>
+                <h3>Output</h3>
+                <p>네트워크와 시스템 기반을 이해하는 AI 서비스 개발자가 되는 것이 최종 목표입니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal">
+        <div class="lab">
+            <div class="terminal">
+                <div class="terminal-top">
+                    <span class="win-dot"></span>
+                    <span class="win-dot"></span>
+                    <span class="win-dot"></span>
+                    model_training.log
+                </div>
+
+                <div class="terminal-body" id="bootLog">
+                    <p class="log-line">> loading student_profile.json</p>
+                    <p class="log-line">> detected goal: <span>AI Developer</span></p>
+                    <p class="log-line">> connecting knowledge route: <span>Web to Network to AI</span></p>
+                    <p class="log-line">> network lab selected as system foundation</p>
+                    <p class="log-line">> training status: <span>in progress</span></p>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <h3>AI 서비스는 모델만으로 완성되지 않는다.</h3>
+
+                <p>
+                    저는 장기적으로 인공지능 분야에서 일하는 것을 목표로 하고 있습니다.
+                    하지만 AI 서비스가 실제 사용자에게 제공되기 위해서는 AI 모델 자체뿐만 아니라
+                    서버, 네트워크, 클라우드, 보안과 같은 기반 기술이 함께 필요하다고 생각합니다.
+                </p>
+
+                <p>
+                    그래서 저는 네트워크 연구실에서 네트워크 구조와 프로토콜, 보안, 트래픽 분석 등을 깊이 공부하고,
+                    이후 AI 모델을 실제 서비스로 연결할 수 있는 개발자로 성장하고 싶습니다.
+                </p>
+
+                <div class="metric">
+                    <div class="metric-label"><span>Web Programming</span><span>78%</span></div>
+                    <div class="bar"><span data-width="78%"></span></div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label"><span>Network Foundation</span><span>86%</span></div>
+                    <div class="bar"><span data-width="86%"></span></div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-label"><span>AI Career Direction</span><span>94%</span></div>
+                    <div class="bar"><span data-width="94%"></span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal" id="mission">
+        <div class="section-head">
+            <div>
+                <div class="section-kicker">02 / SYSTEM LOGS</div>
+                <h2 class="section-title">자기소개 로그 분석</h2>
+            </div>
+
+            <p class="section-desc">
+                왼쪽 로그를 선택하면 오른쪽 출력창에 자기소개 내용이 표시됩니다.
+                평범한 항목을 AI 시스템의 로그처럼 읽히도록 구성했습니다.
+            </p>
+        </div>
+
+        <div class="mission-wrap">
+            <div class="mission-list">
+                <button class="mission-btn active" onclick="openMission('profile', this)">
+                    <span class="code">01</span>
+                    <span><strong>IDENTIFY_AI_CANDIDATE</strong><small>목표와 자기소개</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('growth', this)">
+                    <span class="code">02</span>
+                    <span><strong>TRACE_LEARNING_ROUTE</strong><small>성장 과정</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('problem', this)">
+                    <span class="code">03</span>
+                    <span><strong>DEBUG_PROBLEM_PACKET</strong><small>문제 해결 경험</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('team', this)">
+                    <span class="code">04</span>
+                    <span><strong>RESTORE_TEAM_SESSION</strong><small>협업 경험</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('failure', this)">
+                    <span class="code">05</span>
+                    <span><strong>ANALYZE_FAILURE_LOG</strong><small>실패와 배운 점</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('issue', this)">
+                    <span class="code">06</span>
+                    <span><strong>SECURITY_AND_AI_ISSUE</strong><small>사회 이슈와 견해</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('interest', this)">
+                    <span class="code">07</span>
+                    <span><strong>LOAD_AI_NETWORK_PROTOCOL</strong><small>관심 기술</small></span>
+                </button>
+
+                <button class="mission-btn" onclick="openMission('lab', this)">
+                    <span class="code">08</span>
+                    <span><strong>CONNECT_TO_NETWORK_LAB</strong><small>연구실 진학 이유</small></span>
+                </button>
+            </div>
+
+            <div class="mission-view" id="missionView">
+                <h3>IDENTIFY_AI_CANDIDATE</h3>
+                <div class="mission-meta">> output: candidate_profile.md</div>
+
+                <p>
+                    안녕하세요. 저는 웹 프로그래밍을 배우며 인공지능 분야로 성장하고 싶은 김건희입니다.
+                    처음에는 HTML, CSS, JavaScript를 활용해 웹페이지의 화면을 구성하는 것에 관심을 가졌지만,
+                    공부를 하면서 웹 서비스는 단순히 화면만으로 완성되는 것이 아니라는 점을 알게 되었습니다.
+                </p>
+
+                <p>
+                    사용자의 요청이 서버로 전달되고, 데이터가 네트워크를 통해 이동하며,
+                    다시 화면에 결과가 출력되는 전체 과정이 하나의 서비스라는 점이 흥미롭게 느껴졌습니다.
+                    저는 이러한 흐름을 이해하고, 최종적으로 AI 서비스를 만드는 개발자로 성장하고 싶습니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal" id="route">
+        <div class="section-head">
+            <div>
+                <div class="section-kicker">03 / CAREER ROUTING MAP</div>
+                <h2 class="section-title">AI로 향하는 경로</h2>
+            </div>
+
+            <p class="section-desc">
+                네트워크 연구실은 최종 목적지가 아니라, AI 개발자로 가기 위해 시스템 기반을 이해하는 중요한 라우터입니다.
+            </p>
+        </div>
+
+        <div class="route">
+            <div class="route-node">
+                <div class="tag">CLIENT NODE</div>
+                <h3>현재의 나</h3>
+                <p>웹 프로그래밍을 배우며 화면 뒤에서 데이터가 움직이는 구조에 관심을 가지는 단계입니다.</p>
+            </div>
+
+            <div class="route-node">
+                <div class="tag">WEB/API ROUTER</div>
+                <h3>웹과 서버</h3>
+                <p>사용자 화면, 요청, 응답, API 통신을 이해하며 서비스 구조의 기본기를 쌓습니다.</p>
+            </div>
+
+            <div class="route-node">
+                <div class="tag">LAB SERVER</div>
+                <h3>네트워크 연구실</h3>
+                <p>네트워크, 보안, 클라우드, 트래픽 분석을 공부하며 시스템 기반 역량을 확장합니다.</p>
+            </div>
+
+            <div class="route-node">
+                <div class="tag">AI ENGINE</div>
+                <h3>AI 시스템</h3>
+                <p>Python, 데이터 분석, 머신러닝, LLM API 등을 학습해 AI 기술과 서비스를 연결합니다.</p>
+            </div>
+
+            <div class="route-node">
+                <div class="tag">DESTINATION</div>
+                <h3>AI 개발자</h3>
+                <p>모델과 서비스 구조를 함께 이해하고 실제 사용자에게 제공되는 AI 서비스를 만드는 것이 목표입니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section reveal" id="deploy">
+        <div class="section-head">
+            <div>
+                <div class="section-kicker">04 / DEPLOY PLAN</div>
+                <h2 class="section-title">배포 전 학습 계획</h2>
+            </div>
+
+            <p class="section-desc">
+                앞으로의 계획은 단순히 공부 목록을 늘리는 것이 아니라, AI 서비스를 만들기 위한 기반 역량을 순서대로 쌓는 과정입니다.
+            </p>
+        </div>
+
+        <table class="plan-table">
+            <thead>
+            <tr>
+                <th>STEP</th>
+                <th>ROUTE</th>
+                <th>PLAN</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>01</td>
+                <td>웹 프로그래밍 기초 강화</td>
+                <td>HTML, CSS, JavaScript를 활용해 사용자가 보기 편하고 목적이 분명한 웹페이지를 구현하는 능력을 다집니다.</td>
+            </tr>
+
+            <tr>
+                <td>02</td>
+                <td>서버와 네트워크 이해</td>
+                <td>HTTP, API, TCP/IP, DNS, 서버 통신 구조 등을 학습하며 웹 서비스가 실제로 동작하는 흐름을 이해합니다.</td>
+            </tr>
+
+            <tr>
+                <td>03</td>
+                <td>네트워크 연구실 진학 준비</td>
+                <td>학석사 연계를 목표로 네트워크 보안, 클라우드, 트래픽 분석 등 연구실 분야와 연결되는 주제를 학습합니다.</td>
+            </tr>
+
+            <tr>
+                <td>04</td>
+                <td>AI 기술 학습</td>
+                <td>Python, 머신러닝, 딥러닝, 데이터 분석, LLM API 활용 등을 공부해 AI 모델을 이해하고 활용하는 능력을 키웁니다.</td>
+            </tr>
+
+            <tr>
+                <td>05</td>
+                <td>AI 서비스 프로젝트</td>
+                <td>AI 모델을 웹 또는 앱 서비스에 연결하고, 서버와 네트워크 기반 위에서 실제로 동작하는 프로젝트를 구현합니다.</td>
+            </tr>
+
+            <tr>
+                <td>06</td>
+                <td>AI 분야 진출</td>
+                <td>네트워크와 시스템 기반을 이해하는 AI 개발자로 성장하는 것을 최종 목표로 합니다.</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section final reveal">
+        <div>
+            <h2>MODEL READY<br />FOR NEXT TRAINING</h2>
+            <p>
+                제 목표는 단순히 AI를 사용하는 사람이 아니라,
+                AI 모델이 실제 서비스로 연결되는 구조를 이해하고 구현하는 개발자가 되는 것입니다.
+            </p>
+            <a class="btn" href="#top">다시 부팅하기</a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    [CONNECTION CLOSED] © 2026 Kim Gunhee | AI Network Routing Simulator
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
