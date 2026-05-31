@@ -328,3 +328,86 @@ setInterval(() => {
     bootLog.appendChild(line);
     logIndex++;
 }, 1800);
+
+const packetMessages = {
+    ai: {
+        label: "AI_TREND_PACKET",
+        text: "군 복무 이후 AI가 이미 삶의 많은 부분에 들어와 있다는 점을 체감했고, 이 변화가 AI 서비스 개발에 관심을 갖게 된 계기가 되었습니다."
+    },
+    network: {
+        label: "NETWORK_LAB_PACKET",
+        text: "학석사 연구실인 네트워크 연구실에서 데이터 전송, 트래픽 분석, 서비스 안정성을 공부하며 AI 서비스 개발 역량으로 확장하고 싶습니다."
+    },
+    traffic: {
+        label: "TRAFFIC_LIMIT_PACKET",
+        text: "AI 서비스와 클라우드 사용량이 증가하면서 지연 시간, 대역폭 부족, 안정성 문제가 중요해지고 있으며, 이를 해결하는 기술에 관심이 있습니다."
+    },
+    team: {
+        label: "TEAM_SYNC_PACKET",
+        text: "첫 팀 프로젝트에서는 공유와 역할 분담이 막막했지만, 진행 상황을 자주 맞추고 필요한 기능을 구체화하며 협업 방식을 익혔습니다."
+    },
+    deploy: {
+        label: "DEPLOY_AI_PACKET",
+        text: "최종 목표는 AI 모델을 단순히 사용하는 것이 아니라, 네트워크 기반 위에서 더 빠르고 안정적으로 제공되는 서비스를 개발하는 것입니다."
+    }
+};
+
+const packetSymbols = "01▣▤▥▦▧▨<>/[]{}AI_NET";
+const pretextOutput = document.getElementById("pretextOutput");
+const packetLabel = document.getElementById("packetLabel");
+const packetProgress = document.getElementById("packetProgress");
+const packetTracer = document.getElementById("packetTracer");
+const networkNodes = document.querySelectorAll(".network-node");
+
+function decodePacket(message) {
+    if (!pretextOutput) return;
+
+    let frame = 0;
+    const totalFrames = 28;
+
+    clearInterval(pretextOutput.dataset.timer);
+    pretextOutput.classList.add("decoding");
+
+    const timer = setInterval(() => {
+        const decodedCount = Math.floor((frame / totalFrames) * message.length);
+        const scrambled = message
+            .slice(decodedCount)
+            .split("")
+            .map(char => {
+                if (char === " " || char === "," || char === "." || char === "·") return char;
+                return packetSymbols[Math.floor(Math.random() * packetSymbols.length)];
+            })
+            .join("");
+
+        pretextOutput.textContent = message.slice(0, decodedCount) + scrambled;
+        packetProgress.textContent = "decoding " + Math.min(100, Math.round((frame / totalFrames) * 100)) + "%";
+
+        frame++;
+
+        if (frame > totalFrames) {
+            clearInterval(timer);
+            pretextOutput.textContent = message;
+            packetProgress.textContent = "decoded 100%";
+            pretextOutput.classList.remove("decoding");
+        }
+    }, 28);
+
+    pretextOutput.dataset.timer = timer;
+}
+
+networkNodes.forEach((node, index) => {
+    node.addEventListener("click", () => {
+        const packet = packetMessages[node.dataset.packet];
+
+        networkNodes.forEach(item => item.classList.remove("active"));
+        node.classList.add("active");
+
+        packetLabel.textContent = packet.label;
+        packetTracer.style.setProperty("--packet-y", index * 78 + 38 + "px");
+        packetTracer.classList.remove("move");
+        void packetTracer.offsetWidth;
+        packetTracer.classList.add("move");
+
+        decodePacket(packet.text);
+    });
+});
