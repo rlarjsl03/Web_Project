@@ -212,6 +212,71 @@ h1 {
     gap: 12px;
     flex-wrap: wrap;
 }
+.identity-grid {
+    margin-top: 34px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 22px;
+    overflow: hidden;
+    background: rgba(8, 10, 15, 0.42);
+    backdrop-filter: blur(14px);
+}
+
+.identity-item {
+    min-height: 132px;
+    padding: 18px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.identity-item:nth-child(2n) {
+    border-right: none;
+}
+
+.identity-item:nth-child(n + 3) {
+    border-bottom: none;
+}
+
+.identity-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    background: linear-gradient(#42e9bc, rgba(105, 128, 255, 0.25));
+    opacity: 0;
+    transition: 0.25s;
+}
+
+.identity-item:hover::before {
+    opacity: 1;
+}
+
+.identity-item span {
+    display: block;
+    color: #42e9bc;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.identity-item strong {
+    display: block;
+    color: #f4f7fb;
+    font-size: 16px;
+    line-height: 1.35;
+    margin-bottom: 8px;
+}
+
+.identity-item p {
+    color: #aeb9c8;
+    line-height: 1.6;
+    font-size: 13px;
+    word-break: keep-all;
+}
 
 .btn {
     border: 1px solid rgba(66, 233, 188, 0.78);
@@ -648,18 +713,104 @@ h1 {
     margin-top: 14px;
 }
 
-.pretext-status {
+.text-layout-visual {
     margin-top: 28px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(66, 233, 188, 0.22);
-    color: #42e9bc;
-    font-family: Consolas, monospace;
-    font-size: 13px;
-    line-height: 1.7;
+    display: grid;
+    gap: 7px;
+    position: relative;
+    z-index: 2;
 }
 
-.pretext-status span {
-    color: #dce8f5;
+.layout-line {
+    height: 5px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(66, 233, 188, 0.75), rgba(105, 128, 255, 0.4));
+    transform-origin: left;
+    animation: layoutLineIn 0.55s ease forwards;
+    opacity: 0;
+}
+
+.layout-line:nth-child(odd) {
+    width: 92%;
+}
+
+.layout-line:nth-child(even) {
+    width: 74%;
+}
+
+.layout-line:last-child {
+    width: 46%;
+}
+
+@keyframes layoutLineIn {
+    from {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+.mission-view.layout-flash {
+    box-shadow: 0 0 34px rgba(66, 233, 188, 0.16);
+}
+
+.pretext-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+    font-family: Consolas, monospace;
+}
+
+.pretext-label strong {
+    color: #42e9bc;
+    font-size: 15px;
+}
+
+.pretext-label span {
+    color: #9da8b7;
+    font-size: 12px;
+}
+
+.pretext-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.pretext-box {
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pretext-box small {
+    display: block;
+    color: #9da8b7;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.pretext-box b {
+    display: block;
+    color: #f4f7fb;
+    font-size: 26px;
+    line-height: 1;
+}
+
+.pretext-desc {
+    margin-top: 16px;
+    color: #c9fce9;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
 .route {
@@ -786,11 +937,27 @@ footer {
 }
 
 @media (max-width: 980px) {
+
     .hero-inner,
     .section-head,
     .lab,
     .mission-wrap {
         grid-template-columns: 1fr;
+    }
+
+    .identity-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .identity-item,
+    .identity-item:nth-child(2n),
+    .identity-item:nth-child(n + 3) {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .identity-item:last-child {
+        border-bottom: none;
     }
 
     .model-core {
@@ -839,6 +1006,10 @@ footer {
     .hero {
         min-height: auto;
         padding: 110px 0 70px;
+    }
+
+    .pretext-grid {
+        grid-template-columns: 1fr;
     }
 }
 

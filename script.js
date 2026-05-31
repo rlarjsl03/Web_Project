@@ -5,16 +5,20 @@ let particles = [];
 let pretextPrepare = null;
 let pretextLayout = null;
 let activeMissionType = "profile";
+let pretextReady = false;
 
 import("https://esm.sh/@chenglou/pretext")
     .then(module => {
         pretextPrepare = module.prepare;
         pretextLayout = module.layout;
+        pretextReady = true;
         renderMission(activeMissionType);
     })
     .catch(() => {
+        pretextReady = false;
         renderMission(activeMissionType);
     });
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -88,9 +92,8 @@ const missionData = {
         공부를 하면서 웹 서비스는 단순히 화면만으로 완성되는 것이 아니라는 점을 알게 되었습니다.
       </p>
       <p>
-        저는 장기적으로 인공지능 분야에서 일하는 것을 목표로 하고 있습니다.
-        AI 서비스가 실제 사용자에게 제공되기 위해서는 AI 모델 자체뿐만 아니라
-        서버, 네트워크, 클라우드, 보안과 같은 기반 기술이 함께 필요하다고 생각합니다.
+        사용자의 요청이 서버로 전달되고, 데이터가 네트워크를 통해 이동하며,
+        다시 화면에 결과가 출력되는 전체 과정이 하나의 서비스라는 점이 흥미롭게 느껴졌습니다.
       </p>
     `
     },
@@ -102,12 +105,10 @@ const missionData = {
       <p>
         웹 프로그래밍을 공부하면서 사용자의 화면을 구성하는 것뿐만 아니라,
         그 뒤에서 서버와 데이터가 어떻게 연결되는지에 관심을 가지게 되었습니다.
-        웹페이지가 서버와 데이터를 주고받으며 하나의 서비스로 동작한다는 점이 특히 흥미로웠습니다.
       </p>
       <p>
         이 관심은 자연스럽게 네트워크와 시스템 구조에 대한 궁금증으로 이어졌고,
-        AI 서비스 역시 이러한 기반 위에서 동작한다는 점을 알게 되면서
-        인공지능 분야라는 장기 목표와 연결되었습니다.
+        AI 서비스 역시 이러한 기반 위에서 동작한다는 점을 알게 되면서 인공지능 분야라는 장기 목표와 연결되었습니다.
       </p>
     `
     },
@@ -119,12 +120,10 @@ const missionData = {
       <p>
         웹 프로그래밍 실습을 진행하면서 화면 배치가 깨지거나 JavaScript 이벤트가 실행되지 않는 등
         원하는 기능이 바로 동작하지 않는 경우가 많았습니다.
-        처음에는 오류의 원인을 찾는 것이 막막했지만, 오류 메시지를 확인하고 코드를 작은 단위로 나누어 점검하면서
-        문제를 해결하는 방법을 배웠습니다.
       </p>
       <p>
-        이 경험을 통해 문제 해결은 한 번에 정답을 찾는 일이 아니라,
-        데이터의 흐름을 추적하듯 단계별로 원인을 좁혀 가는 과정이라는 것을 알게 되었습니다.
+        처음에는 오류의 원인을 찾는 것이 막막했지만, 오류 메시지를 확인하고 코드를 작은 단위로 나누어 점검하면서
+        문제를 해결하는 방법을 배웠습니다.
       </p>
     `
     },
@@ -141,7 +140,6 @@ const missionData = {
       <p>
         협업은 단순히 역할을 나누는 것이 아니라,
         서로 다른 생각을 연결해 하나의 결과물로 만드는 과정이라고 생각합니다.
-        앞으로 연구실에서도 소통을 중요하게 생각하며 프로젝트에 참여하고 싶습니다.
       </p>
     `
     },
@@ -156,7 +154,6 @@ const missionData = {
       </p>
       <p>
         이후에는 작은 단위부터 구현하고, 동작을 확인한 뒤 점차 개선하는 방식이 더 효과적이라는 것을 배웠습니다.
-        실패는 다음 시도에서 더 나은 선택을 하기 위한 로그라고 생각합니다.
       </p>
     `
     },
@@ -183,8 +180,6 @@ const missionData = {
       <p>
         제가 관심을 가지고 있는 분야는 인공지능, 웹 서비스, 서버/API, 컴퓨터 네트워크,
         클라우드, 네트워크 보안입니다.
-        특히 AI 모델을 단순히 사용하는 것에서 끝나는 것이 아니라,
-        실제 웹이나 앱 서비스에 연결하고 사용자에게 안정적으로 제공하는 과정에 관심이 있습니다.
       </p>
       <ul>
         <li>Artificial Intelligence: 머신러닝, 딥러닝, LLM 활용</li>
@@ -206,8 +201,6 @@ const missionData = {
       </p>
       <p>
         저에게 네트워크 연구실은 최종 목적지가 아니라 AI 분야로 나아가기 위한 중요한 경로입니다.
-        연구실에서 네트워크 구조와 프로토콜, 보안, 트래픽 분석 등을 공부하고,
-        이를 바탕으로 AI 서비스 개발 역량과 연결하고 싶습니다.
       </p>
     `
     }
@@ -219,15 +212,11 @@ function stripHtml(html) {
     return temp.textContent || temp.innerText || "";
 }
 
-function getPretextStatus(title, body) {
+function getTextLayoutVisual(title, body) {
     const missionView = document.getElementById("missionView");
 
-    if (!pretextPrepare || !pretextLayout) {
-        return `
-      <div class="pretext-status">
-        PRETEXT_LAYOUT / <span>loading text layout engine...</span>
-      </div>
-    `;
+    if (!pretextReady || !pretextPrepare || !pretextLayout) {
+        return `<div class="text-layout-visual"></div>`;
     }
 
     const plainText = title + "\n" + stripHtml(body);
@@ -241,14 +230,18 @@ function getPretextStatus(title, body) {
     const textHeight = Math.round(result.height || 0);
     const lineCount = result.lineCount || Math.max(1, Math.round(textHeight / lineHeight));
 
-    missionView.style.minHeight = Math.max(560, textHeight + 180) + "px";
+    missionView.style.minHeight = Math.max(560, textHeight + 220) + "px";
+
+    let lines = "";
+    const visualLineCount = Math.min(lineCount, 12);
+
+    for (let i = 0; i < visualLineCount; i++) {
+        lines += `<span class="layout-line" style="animation-delay:${i * 0.045}s"></span>`;
+    }
 
     return `
-    <div class="pretext-status">
-      PRETEXT_LAYOUT /
-      <span>lines: ${lineCount}</span> /
-      <span>text height: ${textHeight}px</span> /
-      <span>width: ${Math.round(width)}px</span>
+    <div class="text-layout-visual" aria-hidden="true">
+      ${lines}
     </div>
   `;
 }
@@ -256,13 +249,17 @@ function getPretextStatus(title, body) {
 function renderMission(type) {
     const data = missionData[type];
     const missionView = document.getElementById("missionView");
-    const pretextStatus = getPretextStatus(data.title, data.body);
+    const layoutVisual = getTextLayoutVisual(data.title, data.body);
+
+    missionView.classList.remove("layout-flash");
+    void missionView.offsetWidth;
+    missionView.classList.add("layout-flash");
 
     missionView.innerHTML = `
     <h3>${data.title}</h3>
     <div class="mission-meta">${data.meta}</div>
     ${data.body}
-    ${pretextStatus}
+    ${layoutVisual}
   `;
 }
 
@@ -311,10 +308,10 @@ window.addEventListener("resize", () => {
 
 const bootLog = document.getElementById("bootLog");
 const extraLogs = [
+    "> scanning mission text layout",
+    "> calculating line flow",
     "> mapping interest vector: AI service + network",
-    "> optimizing future route: lab research to AI career",
-    "> deploy target confirmed: AI Developer",
-    "> model confidence updated"
+    "> deploy target confirmed: AI Developer"
 ];
 
 let logIndex = 0;
@@ -324,7 +321,10 @@ setInterval(() => {
 
     const line = document.createElement("p");
     line.className = "log-line";
-    line.innerHTML = extraLogs[logIndex].replace("AI Developer", "<span>AI Developer</span>");
+    line.innerHTML = extraLogs[logIndex]
+        .replace("Pretext.js", "<span>Pretext.js</span>")
+        .replace("AI Developer", "<span>AI Developer</span>");
+
     bootLog.appendChild(line);
     logIndex++;
 }, 1800);
