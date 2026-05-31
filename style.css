@@ -706,7 +706,8 @@ h1 {
     max-width: 100%;
     width: fit-content;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
+    padding-right: 4px;
     letter-spacing: 0;
     transition: width 0.2s ease, color 0.2s ease;
 }
@@ -719,7 +720,7 @@ h1 {
 }
 
 .packet-copy .pretext-line.is-justifiable {
-    width: calc(100% - 1px);
+    width: calc(100% - 4px);
 }
 
 .packet-copy .pretext-line.is-justifiable .pretext-char {
