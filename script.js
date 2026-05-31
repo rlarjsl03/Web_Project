@@ -68,6 +68,75 @@ let pretextApi = null;
 let packetLayoutTimer = null;
 let packetRoutingRaf = null;
 const packetPreparedCache = new WeakMap();
+const packetRoutingState = new WeakMap();
+const ROUTING_ACTIVATE_PADDING = 22;
+const ROUTING_DEACTIVATE_PADDING = 10;
+const ROUTING_HOLD_MS = 220;
+const TEXT_AVOID_MAX_SHIFT = 18;
+const TEXT_AVOID_INTERVAL_MS = 32;
+const PACKET_ROUTE_LANES = [16, 24, 32, 40, 48, 56, 64, 72, 80];
+let lastTextAvoidAt = 0;
+
+function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function pickRandomLaneIndex(excludedIndices) {
+    const candidates = PACKET_ROUTE_LANES
+        .map((_, index) => index)
+        .filter(index => !excludedIndices.has(index));
+    const pool = candidates.length ? candidates : PACKET_ROUTE_LANES.map((_, index) => index);
+    const randomIndex = Math.floor(Math.random() * pool.length);
+    return pool[randomIndex];
+}
+
+function assignRandomPacketRoute(chip, previousLaneIndex) {
+    const currentLaneIndex = Number.parseInt(chip.dataset.laneIndex || "-1", 10);
+    const excluded = new Set();
+
+    if (Number.isInteger(currentLaneIndex) && currentLaneIndex >= 0) {
+        excluded.add(currentLaneIndex);
+    }
+
+    if (Number.isInteger(previousLaneIndex) && previousLaneIndex >= 0) {
+        excluded.add(previousLaneIndex);
+    }
+
+    const laneIndex = pickRandomLaneIndex(excluded);
+    const lanePercent = PACKET_ROUTE_LANES[laneIndex];
+    const duration = randomInRange(8.8, 12.4);
+    const negativeDelay = -randomInRange(0, duration);
+    const spawnX = randomInRange(-134, -56);
+    const laneJitter = randomInRange(-2.4, 2.4);
+
+    chip.style.setProperty("--track", lanePercent.toFixed(2) + "%");
+    chip.style.setProperty("--route-duration", duration.toFixed(2) + "s");
+    chip.style.setProperty("--route-delay", negativeDelay.toFixed(2) + "s");
+    chip.style.setProperty("--spawn-x", spawnX.toFixed(1) + "px");
+    chip.style.setProperty("--lane-jitter", laneJitter.toFixed(1) + "px");
+    chip.dataset.laneIndex = String(laneIndex);
+
+    return laneIndex;
+}
+
+function initPacketChipRoutes() {
+    const chips = document.querySelectorAll(".packet-field .packet-chip");
+
+    if (!chips.length) {
+        return;
+    }
+
+    let previousLaneIndex = -1;
+
+    chips.forEach(chip => {
+        previousLaneIndex = assignRandomPacketRoute(chip, previousLaneIndex);
+
+        chip.addEventListener("animationiteration", () => {
+            const currentLaneIndex = Number.parseInt(chip.dataset.laneIndex || "-1", 10);
+            assignRandomPacketRoute(chip, currentLaneIndex);
+        });
+    });
+}
 
 function estimateTextLayout(text, width, lineHeight) {
     const averageCharWidth = 7.2;
@@ -105,7 +174,6 @@ function estimateTextLayout(text, width, lineHeight) {
     }));
 
     return {
-        lineCount: packedLines.length,
         height: packedLines.length * lineHeight,
         lines: packedLines
     };
@@ -174,7 +242,6 @@ function buildPacketTextLayout(textElement, text, width, lineHeight, font) {
 
             if (lines && lines.length) {
                 return {
-                    lineCount: richLayout.lineCount || lines.length,
                     height: richLayout.height || (lines.length * lineHeight),
                     lines
                 };
@@ -184,7 +251,6 @@ function buildPacketTextLayout(textElement, text, width, lineHeight, font) {
         if (prepared.plain && pretextApi.layout) {
             const basicLayout = pretextApi.layout(prepared.plain, width, lineHeight);
             return {
-                lineCount: basicLayout.lineCount || fallback.lineCount,
                 height: basicLayout.height || fallback.height,
                 lines: fallback.lines
             };
@@ -196,7 +262,7 @@ function buildPacketTextLayout(textElement, text, width, lineHeight, font) {
     return fallback;
 }
 
-function renderPacketTextLines(textElement, lines, width, routingActive) {
+function renderPacketTextLines(textElement, lines, width) {
     const fragment = document.createDocumentFragment();
     const safeLines = lines && lines.length ? lines : [{ text: textElement.dataset.sourceText || "", width: 0 }];
 
@@ -208,15 +274,26 @@ function renderPacketTextLines(textElement, lines, width, routingActive) {
         const compactLength = lineText.replace(/\s+/g, "").length;
 
         lineNode.className = "pretext-line";
-        lineNode.textContent = lineText;
+        Array.from(lineText).forEach(char => {
+            if (char === " ") {
+                lineNode.appendChild(document.createTextNode(" "));
+                return;
+            }
 
-        if (routingActive && !isLast && lineText && lineWidth > 0 && compactLength > 1) {
+            const charNode = document.createElement("span");
+            charNode.className = "pretext-char";
+            charNode.textContent = char;
+            lineNode.appendChild(charNode);
+        });
+
+        if (!isLast && lineText && lineWidth > 0 && compactLength > 1) {
             const availableGap = Math.max(0, width - lineWidth);
-            const spacing = Math.min(0.88, availableGap / (compactLength - 1));
+            const movableCount = Math.max(1, compactLength - 1);
+            const spacing = Math.min(0.34, availableGap / movableCount);
 
-            if (spacing > 0.01) {
-                lineNode.classList.add("is-justified");
-                lineNode.style.setProperty("--packet-spacing", spacing.toFixed(3) + "px");
+            if (spacing > 0.015 && availableGap > 1.5) {
+                lineNode.classList.add("is-justifiable");
+                lineNode.style.setProperty("--packet-justify-spacing", spacing.toFixed(3) + "px");
             }
         }
 
@@ -230,14 +307,15 @@ function renderPacketTextLines(textElement, lines, width, routingActive) {
 
 function applyPretextPacketLayout() {
     const packetTexts = document.querySelectorAll(".packet-card p");
-    const font = "400 14px Arial, Helvetica, sans-serif";
-    const lineHeight = 23.8;
 
     packetTexts.forEach(textElement => {
         const card = textElement.closest(".packet-card");
         const sourceText = (textElement.dataset.sourceText || textElement.textContent || "").replace(/\s+/g, " ").trim();
-        const routeInset = card && card.classList.contains("is-routing") ? 22 : 0;
-        const width = Math.max(160, (card ? card.clientWidth : 296) - 36 - routeInset);
+        const width = Math.max(160, (card ? card.clientWidth : 296) - 36);
+        const styles = window.getComputedStyle(textElement);
+        const font = `${styles.fontWeight} ${styles.fontSize} ${styles.fontFamily}`;
+        const lineHeightValue = parseFloat(styles.lineHeight);
+        const lineHeight = Number.isFinite(lineHeightValue) ? lineHeightValue : 23.8;
 
         if (!sourceText) {
             return;
@@ -245,9 +323,8 @@ function applyPretextPacketLayout() {
 
         textElement.dataset.sourceText = sourceText;
         const result = buildPacketTextLayout(textElement, sourceText, width, lineHeight, font);
-        renderPacketTextLines(textElement, result.lines, width, card ? card.classList.contains("is-routing") : false);
+        renderPacketTextLines(textElement, result.lines, width);
         textElement.style.minHeight = result.height + "px";
-        textElement.dataset.lines = result.lineCount;
     });
 }
 
@@ -277,7 +354,21 @@ function isIntersectingWithPadding(a, b, padding) {
     );
 }
 
-function syncPacketRoutingState() {
+function getPacketRoutingState(card) {
+    let state = packetRoutingState.get(card);
+
+    if (!state) {
+        state = {
+            active: card.classList.contains("is-routing"),
+            lastHitAt: 0
+        };
+        packetRoutingState.set(card, state);
+    }
+
+    return state;
+}
+
+function syncPacketRoutingState(timestamp) {
     const packetField = document.querySelector(".packet-field");
     const cards = packetField ? packetField.querySelectorAll(".packet-card") : [];
     const chips = packetField ? packetField.querySelectorAll(".packet-chip") : [];
@@ -286,27 +377,136 @@ function syncPacketRoutingState() {
         return;
     }
 
-    let hasRoutingStateChange = false;
-
     const chipRects = Array.from(chips, chip => chip.getBoundingClientRect());
 
     cards.forEach(card => {
+        const state = getPacketRoutingState(card);
         const cardRect = card.getBoundingClientRect();
-        const active = chipRects.some(chipRect => {
-            return isIntersectingWithPadding(cardRect, chipRect, 20);
+
+        const intersects = chipRects.some(chipRect => {
+            return isIntersectingWithPadding(cardRect, chipRect, ROUTING_ACTIVATE_PADDING);
         });
 
-        const wasActive = card.classList.contains("is-routing");
+        if (intersects) {
+            state.lastHitAt = timestamp;
 
-        if (active !== wasActive) {
-            card.classList.toggle("is-routing", active);
-            hasRoutingStateChange = true;
+            if (!state.active) {
+                state.active = true;
+                card.classList.add("is-routing");
+            }
+
+            return;
+        }
+
+        if (!state.active) {
+            return;
+        }
+
+        if ((timestamp - state.lastHitAt) < ROUTING_HOLD_MS) {
+            return;
+        }
+
+        const intersectsNarrow = chipRects.some(chipRect => {
+            return isIntersectingWithPadding(cardRect, chipRect, ROUTING_DEACTIVATE_PADDING);
+        });
+
+        if (!intersectsNarrow) {
+            state.active = false;
+            card.classList.remove("is-routing");
         }
     });
 
-    if (hasRoutingStateChange) {
-        applyPretextPacketLayout();
+    applyPacketTextAvoidance(cards, chipRects, timestamp);
+}
+
+function applyPacketTextAvoidance(cards, chipRects, timestamp) {
+    if ((timestamp - lastTextAvoidAt) < TEXT_AVOID_INTERVAL_MS) {
+        return;
     }
+
+    lastTextAvoidAt = timestamp;
+
+    cards.forEach(card => {
+        const lines = card.querySelectorAll(".pretext-line");
+
+        lines.forEach(line => {
+            const charNodes = line.querySelectorAll(".pretext-char");
+
+            if (!charNodes.length) {
+                return;
+            }
+
+            const lineRect = line.getBoundingClientRect();
+            const lineCenterY = (lineRect.top + lineRect.bottom) / 2;
+            const lineHeight = Math.max(14, lineRect.height);
+            const nearbyChips = chipRects.filter(chipRect => {
+                const chipCenterY = (chipRect.top + chipRect.bottom) / 2;
+                const verticalGap = Math.abs(chipCenterY - lineCenterY);
+                const verticalRange = lineHeight * 0.95;
+
+                if (verticalGap > verticalRange) {
+                    return false;
+                }
+
+                return !(chipRect.right < (lineRect.left - 14) || chipRect.left > (lineRect.right + 14));
+            });
+
+            if (!nearbyChips.length) {
+                charNodes.forEach(charNode => {
+                    charNode.style.setProperty("--char-avoid-x", "0px");
+                });
+                return;
+            }
+
+            charNodes.forEach(charNode => {
+                const charRect = charNode.getBoundingClientRect();
+                const charCenterY = (charRect.top + charRect.bottom) / 2;
+                const charCenterX = (charRect.left + charRect.right) / 2;
+                const charHeight = Math.max(12, charRect.height);
+                const verticalRange = charHeight * 0.9;
+                let bestOffset = 0;
+
+                nearbyChips.forEach(chipRect => {
+                    const chipCenterX = (chipRect.left + chipRect.right) / 2;
+                    const chipCenterY = (chipRect.top + chipRect.bottom) / 2;
+                    const verticalGap = Math.abs(chipCenterY - charCenterY);
+
+                    if (verticalGap > verticalRange) {
+                        return;
+                    }
+
+                    const overlapLeft = Math.max(charRect.left, chipRect.left);
+                    const overlapRight = Math.min(charRect.right, chipRect.right);
+                    const overlapX = overlapRight - overlapLeft;
+
+                    let horizontalGap = 0;
+                    if (overlapX < 0) {
+                        horizontalGap = -overlapX;
+                    }
+
+                    if (horizontalGap > 11) {
+                        return;
+                    }
+
+                    const direction = charCenterX < chipCenterX ? -1 : 1;
+                    const verticalFactor = Math.max(0, 1 - (verticalGap / verticalRange));
+                    const horizontalFactor = Math.max(0, 1 - (horizontalGap / 11));
+                    const overlapBoost = Math.max(0, overlapX) * 0.38;
+                    const shiftAmount = Math.min(
+                        TEXT_AVOID_MAX_SHIFT,
+                        (5 + overlapBoost) * verticalFactor * (0.55 + horizontalFactor)
+                    );
+                    const shift = direction * shiftAmount;
+
+                    if (Math.abs(shift) > Math.abs(bestOffset)) {
+                        bestOffset = shift;
+                    }
+                });
+
+                charNode.style.setProperty("--char-avoid-x", bestOffset.toFixed(2) + "px");
+            });
+        });
+    });
 }
 
 function startPacketRoutingWatcher() {
@@ -314,8 +514,8 @@ function startPacketRoutingWatcher() {
         return;
     }
 
-    const loop = () => {
-        syncPacketRoutingState();
+    const loop = timestamp => {
+        syncPacketRoutingState(timestamp);
         packetRoutingRaf = requestAnimationFrame(loop);
     };
 
@@ -323,6 +523,7 @@ function startPacketRoutingWatcher() {
 }
 
 startPacketRoutingWatcher();
+initPacketChipRoutes();
 
 const missionData = {
     profile: {
@@ -330,11 +531,11 @@ const missionData = {
         meta: "> output: candidate_profile.md",
         body: `
       <p>
-        안녕하세요. 저는 국립공주대학교에서 컴퓨터공학을 공부하며,
-        AI와 네트워크 기술을 중심으로 성장하고 싶은 개발자 김건희입니다.
+        안녕하세요. 저는 국립공주대학교 소프트웨어학과에서 공부하며
+        AI와 네트워크를 연결한 서비스를 만들고 싶은 개발자 김건희입니다.
         최근 빠르게 발전하는 AI가 검색, 추천, 자동화, 번역처럼 사회의 다양한 영역에 들어오고,
         일상생활을 더 편리하게 만드는 모습에 큰 매력을 느꼈습니다.
-        기술이 사람의 일상 경험을 바꾸는 과정을 보며, 저도 실질적인 변화를 만드는 개발자가 되고 싶다고 생각했습니다.
+        기술이 사람의 일상 경험을 바꾸는 과정을 보며 저도 실질적인 변화를 만드는 개발자가 되고 싶다고 생각했습니다.
       </p>
       <p>
         제가 이루고 싶은 목표는 AI를 활용해 학석사 연구실인 네트워크 연구실에서
@@ -448,8 +649,8 @@ const missionData = {
         <li>Traffic Optimization: 데이터 전송 한계, 경로 선택, 품질 개선</li>
       </ul>
       <p>
-        관련 진로 대상으로는 학석사 연계 네트워크 연구실에서 기반 역량을 강화하고,
-        이후 AI 서비스 기업/연구 조직에서 네트워크 기반 AI 서비스 개발로 확장하는 방향을 생각하고 있습니다.
+        진로는 학석사 연계 네트워크 연구실에서 기반 역량을 강화한 뒤,
+        AI 서비스 기업 또는 연구 조직에서 네트워크 기반 AI 서비스 개발로 확장하는 방향을 생각하고 있습니다.
       </p>
     `
     },
